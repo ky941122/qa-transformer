@@ -31,7 +31,8 @@ class Transformer():
                                vocab_size=word_vocab_size,
                                num_units=hidden_units,
                                scale=True,
-                               scope="Embedding")
+                               scope="Embedding",
+                               reuse=tf.AUTO_REUSE)
 
         self.enc_pos = embedding(self.input_x_2,
                                vocab_size=word_vocab_size,
@@ -51,7 +52,8 @@ class Transformer():
                                 vocab_size=tag_vocab_size,
                                 num_units=hidden_units,
                                 scale=True,
-                                scope="Tag_Embedding")
+                                scope="Tag_Embedding",
+                                reuse=tf.AUTO_REUSE)
 
         self.enc_pos += embedding(self.input_x_22,
                                 vocab_size=tag_vocab_size,
@@ -73,7 +75,8 @@ class Transformer():
                                   num_units=hidden_units,
                                   zero_pad=False,
                                   scale=False,
-                                  scope="Position_Embedding")
+                                  scope="Position_Embedding",
+                                  reuse=tf.AUTO_REUSE)
 
         self.enc_pos += embedding(
                                 tf.tile(tf.expand_dims(tf.range(tf.shape(self.input_x_2)[1]), 0), [tf.shape(self.input_x_2)[0], 1]),
@@ -98,16 +101,18 @@ class Transformer():
         self.enc_neg = tf.layers.dropout(self.enc_neg, rate=self.dropout_prob, training=self.is_training)
 
         for i in range(num_blocks):
-            with tf.variable_scope("num_blocks_{}".format(i)):
+            with tf.variable_scope("num_blocks_{}".format(i), reuse=tf.AUTO_REUSE):
                 self.enc_q = multihead_attention(queries=self.enc_q,
                                                  keys=self.enc_q,
                                                  num_units=hidden_units,
                                                  num_heads=num_heads,
                                                  dropout_rate=self.dropout_prob,
                                                  is_training=self.is_training,
-                                                 causality=False)
+                                                 causality=False,
+                                                 reuse=tf.AUTO_REUSE)
                 self.enc_q = feedforward(self.enc_q,
-                                         num_units=[4*hidden_units, hidden_units])
+                                         num_units=[4*hidden_units, hidden_units],
+                                         reuse=tf.AUTO_REUSE)
 
                 self.enc_pos = multihead_attention(queries=self.enc_pos,
                                                  keys=self.enc_pos,
@@ -133,6 +138,12 @@ class Transformer():
                                            num_units=[4 * hidden_units, hidden_units],
                                            reuse=True)
 
+
+
+        with tf.variable_scope("Pooler"):
+            self.enc_q = tf.squeeze(tf.layers.max_pooling1d(self.enc_q, pool_size=sequence_length, strides=1), axis=1)
+            self.enc_pos = tf.squeeze(tf.layers.max_pooling1d(self.enc_pos, pool_size=sequence_length, strides=1), axis=1)
+            self.enc_neg = tf.squeeze(tf.layers.max_pooling1d(self.enc_neg, pool_size=sequence_length, strides=1), axis=1)
 
         with tf.variable_scope("Out"):
             pred_pos = self.cos(self.enc_q, self.enc_pos)

@@ -15,8 +15,8 @@ import datetime
 
 
 # Data
-tf.flags.DEFINE_string("train_file", "data/id_pairwise_data_xmwjinfu_2.0", "train data (id)")
-tf.flags.DEFINE_string("dev_data", "data/xinwang_test/id_xinwang_test_jinfu_2.0", "dev data (id)")
+tf.flags.DEFINE_string("train_file", "data/id_pairwise_data3.0", "train data (id)")
+tf.flags.DEFINE_string("dev_data", "data/id_zhongxin_dev_3.0", "dev data (id)")
 tf.flags.DEFINE_integer("vocab_size", 15000, "vocab.txt")
 tf.flags.DEFINE_integer("tag_vocab_size", 3, "vocab.txt")
 tf.flags.DEFINE_integer("pad_id", 0, "id for <pad> token in character list")
@@ -25,8 +25,8 @@ tf.flags.DEFINE_integer("pad_id", 0, "id for <pad> token in character list")
 tf.flags.DEFINE_integer("max_sequence_length", 20, "Max sequence length fo sentence (default: 200)")
 tf.flags.DEFINE_float("margin", 0.7, "learning_rate (default: 0.1)")
 tf.flags.DEFINE_integer("hidden_units", 512, "Number of filters per filter size (default: 128)")
-tf.flags.DEFINE_integer("num_blocks", 6, "Number of filters per filter size (default: 128)")
-tf.flags.DEFINE_integer("num_heads", 8, "Number of filters per filter size (default: 128)")
+tf.flags.DEFINE_integer("num_blocks", 3, "Number of filters per filter size (default: 128)")
+tf.flags.DEFINE_integer("num_heads", 4, "Number of filters per filter size (default: 128)")
 tf.flags.DEFINE_float("dropout_prob", 0.2, "Dropout probability (default: 0.5)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0, "L2 regularizaion lambda (default: 0.0)")
 tf.flags.DEFINE_float("learning_rate", 0.001, "learning_rate (default: 0.1)")
@@ -35,7 +35,7 @@ tf.flags.DEFINE_float("learning_rate", 0.001, "learning_rate (default: 0.1)")
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_integer("max_epoch", 50, "Number of training epochs (default: 200)")
 tf.flags.DEFINE_integer("evaluate_every", 10, "Evaluate model on dev set after this many steps (default: 100)")
-tf.flags.DEFINE_integer("checkpoint_every", 200000, "Save model after this many steps (default: 100)")
+tf.flags.DEFINE_integer("checkpoint_every", 100000, "Save model after this many steps (default: 100)")
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
@@ -112,12 +112,12 @@ def load_dev_data(filename, seq_len, pad_id):
 
 
 def get_result(indexs):
-    f2 = open("data/xinwang_test/kID", "r")
+    f2 = open("data/es_kID_zhongxin", "r")
     kIDs = f2.readlines()
     kIDs = [kID.strip() for kID in kIDs]
     #print kIDs
 
-    f3 = open("data/xinwang_test/true_kID", 'r')
+    f3 = open("data/zhongxin_test_truekid", 'r')
     labels = f3.readlines()
     labels = [label.strip() for label in labels]
     #print labels

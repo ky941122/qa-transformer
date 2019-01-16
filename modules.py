@@ -11,7 +11,7 @@ import tensorflow as tf
 
 def normalize(inputs, 
               epsilon = 1e-8,
-              scope="ln",
+              scope="LayerNorm",
               reuse=None):
     '''Applies layer normalization.
     
@@ -173,7 +173,7 @@ def multihead_attention(queries,
                         dropout_rate=0,
                         is_training=True,
                         causality=False,
-                        scope="multihead_attention", 
+                        scope="Multihead_Attention",
                         reuse=None):
     '''Applies multihead attention.
     
@@ -252,13 +252,13 @@ def multihead_attention(queries,
         outputs += queries
               
         # Normalize
-        outputs = normalize(outputs) # (N, T_q, C)
+        outputs = normalize(outputs, reuse=reuse) # (N, T_q, C)
  
     return outputs
 
 def feedforward(inputs, 
                 num_units=[2048, 512],
-                scope="multihead_attention", 
+                scope="FeedForward",
                 reuse=None):
     '''Point-wise feed forward net.
     
@@ -287,7 +287,7 @@ def feedforward(inputs,
         outputs += inputs
         
         # Normalize
-        outputs = normalize(outputs)
+        outputs = normalize(outputs, reuse=reuse)
     
     return outputs
 
